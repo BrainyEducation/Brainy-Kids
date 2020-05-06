@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/jvt/Brainy-Kids.svg?style=svg)](https://circleci.com/gh/jvt/Brainy-Kids)
 
-# 8108 - Brainy Kids Administration panel and Analytics Platform
+#  Brainy Kids Administration panel and Analytics Platform
 
 This is the codebase for the Brainy Kids backend and administration panel. This repository also includes the code required for ingesting analytics from the various applications. Keep in mind that this application has to be running only on a single computer/server. All other teachers, administrators, etc will access it through the web.
 
@@ -23,12 +23,23 @@ This is the codebase for the Brainy Kids backend and administration panel. This 
 8.  Start the application with `npm run dev`
 9.  Navigate your browser to `localhost:3000`
 
-Now other users should be able to access the application by navigating to it in their web-browser.
-
 ## Common issues
 
 1. The program will exit on startup if it is unable to find an instance of MongoDB running at the set URI. Be sure that the instance of MongoDB is running before you start the program.
 2. If the program crashes on startup with error messages mentioning the word "dependicies" run `npm install` in the root directory of the project again.
+3. MongoDB version of > 2.4 is required – if you see issues related to MongoDB on startup check your version and update
+
+## Get Started 
+Review the Information on the Wiki to get an overview of setting up external Apps to use the DAP
+[https://github.com/BrainyEducation/Brainy-Kids/wiki](https://github.com/BrainyEducation/Brainy-Kids/wiki)
+
+## Examples 
+A small set of examples can be seen in `examples/` 
+– Login using a Student ID Number receiving a JWT to use for authenticated API endpoints
+– Create Program
+– Create Focus Item
+– Create Analytic data for individual students against Focus items
+– Get Student/Program Data
 
 ## Release Notes November 30th: v1.0.0
 ### New Features
