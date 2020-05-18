@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const schema = mongoose.Schema(
 	{
-		// 3-character unique ID for this student
+		// 2-character unique ID for this student
 		student_id: {
 			type: String,
 			required: true,

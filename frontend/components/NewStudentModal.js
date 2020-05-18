@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Alert, Row, Button, InputNumber } from 'antd';
+import { Modal, Alert, Row, Button, InputNumber,  Input } from 'antd';
 
 export default props => {
 	return (
@@ -29,8 +29,8 @@ export default props => {
 				showIcon
 				type="info"
 				message={`
-				Please enter this student's unique 3-digit ID number. It will be
-				appened to your teacher ID to generate a unique 6-digit ID for
+				Please enter this student's unique 2-digit ID number. It will be
+				appened to your teacher ID to generate a unique 5-digit ID for
 				this student to log into the various applications with. We
 				recommend storing the names associated with these IDs in an
 				Excel spreadsheet.`}
@@ -45,13 +45,12 @@ export default props => {
 					}}>
 					Student ID
 				</p>
-				<InputNumber
+				<Input
 					disabled={props.loading}
-					style={{ display: 'inline-block' }}
-					placeholder="###"
+					style={{ display: 'inline-block', maxWidth: '60px' }}
+					placeholder="##"
 					autoFocus
-					max={999}
-					min={0}
+					maxLength="2"
 					onChange={props.onChange}
 				/>
 			</Row>
