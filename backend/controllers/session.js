@@ -181,7 +181,7 @@ module.exports.loginStudent = async (req, res) => {
         });
     }
 
-    if (req.body.id.length !== 6) {
+    if (req.body.id.length !== 5) {
         return res.status(400).json({
             status: 'error',
             message: INCORRECT_MESSAGE,
