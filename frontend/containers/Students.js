@@ -56,7 +56,7 @@ class Students extends Component {
 			student_id: '',
 			csv: [],
 		};
-
+		
 		this.createStudent = this.createStudent.bind(this);
 		this.newStudentOnChange = this.newStudentOnChange.bind(this);
 		this.setModalVisibility = this.setModalVisibility.bind(this);
@@ -65,7 +65,6 @@ class Students extends Component {
 	createStudent() {
 		const { token, students } = this.props;
 		const { student_id } = this.state;
-		console.log(students, student_id);
 		if (!student_id || student_id.length !== 2) {
 			return notification.error({
 				message: 'Uh oh!',
