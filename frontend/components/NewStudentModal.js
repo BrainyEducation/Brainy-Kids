@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Alert, Row, Button, InputNumber,  Input } from 'antd';
+import { Modal, Alert, Row, Button, Input } from 'antd';
 
 export default props => {
 	return (
