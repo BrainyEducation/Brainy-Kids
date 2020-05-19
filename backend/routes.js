@@ -253,7 +253,7 @@ module.exports = (app, passport) => {
 			passport.authenticate('jwt', PASSPORT_OPTIONS),
 			check('teacher', 'Must contain an teacher.').exists(),
 			check('student_id', 'Must contain an student_id.').exists(),
-			check('student_id', 'Student ID must be numeric.').isNumeric(),
+			check('student_id', 'Student ID must be alphabetic (a-z only).').isAlpha(),
 			validation.validate(validationResult),
 		],
 		controllers.student.create

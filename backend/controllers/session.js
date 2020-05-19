@@ -19,7 +19,33 @@ async function maxId() {
     if (toRet) {
         return toRet.teacher_id;
     } else {
-        return 0;
+        return 'aaa';
+    }
+}
+
+function nextLetter(letter){
+    const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+    const index = letters.indexOf(letter);
+    if(letter === 'z') return 'a';
+    return letters[index+1];
+}
+
+async function nextId(previousId) {
+    const l = previousId.split('');
+    if(l[2] !== 'z') {
+        // [aab] -> // [aac]
+        const lastL = nextLetter(l[2]);
+        return `${l[0]}${l[1]}${lastL}`;
+    
+    } else if(l[2] === 'z') {
+        // [bbz] -> // [bca]
+        const middleLetter = nextLetter(l[1]);
+        return `${l[0]}${middleLetter}a`;
+    
+    } else if(l[1] === 'z' && l[2] === 'z') {
+        // [bzz] -> // [caa]
+        const firstL = nextLetter(l[0]);
+        return `${firstL}aa`;
     }
 }
 
@@ -33,13 +59,13 @@ function unexpectedError(error, res) {
 }
 
 async function createNewTeacher(name, email, passwordHash, res) {
-    var mId = parseInt(await maxId());
-    var id = mId + 1;
+    var prevId = await maxId();
+    var id = await nextId(prevId);
 
     new Teacher({
         name: name,
         email: email,
-        teacher_id: ('00' + id).slice(-3),
+        teacher_id: id,
         password: passwordHash,
     })
         .save()
@@ -155,7 +181,7 @@ module.exports.loginStudent = async (req, res) => {
         });
     }
 
-    if (req.body.id.length !== 6) {
+    if (req.body.id.length !== 5) {
         return res.status(400).json({
             status: 'error',
             message: INCORRECT_MESSAGE,

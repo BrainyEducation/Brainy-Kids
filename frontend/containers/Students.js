@@ -56,7 +56,7 @@ class Students extends Component {
 			student_id: '',
 			csv: [],
 		};
-
+		
 		this.createStudent = this.createStudent.bind(this);
 		this.newStudentOnChange = this.newStudentOnChange.bind(this);
 		this.setModalVisibility = this.setModalVisibility.bind(this);
@@ -65,10 +65,10 @@ class Students extends Component {
 	createStudent() {
 		const { token, students } = this.props;
 		const { student_id } = this.state;
-		if (!student_id || student_id.length !== 3) {
+		if (!student_id || student_id.length !== 2) {
 			return notification.error({
 				message: 'Uh oh!',
-				description: 'Please enter a 3-digit student ID number',
+				description: 'Please enter a 2-digit student ID number',
 			});
 		}
 
@@ -150,7 +150,8 @@ class Students extends Component {
 		reader.readAsDataURL(e.file);
 	}
 
-	newStudentOnChange(student_id) {
+	newStudentOnChange(e) {
+		const student_id = e.target.value;
 		this.setState({
 			student_id: `${student_id}`, // We cast it to a string so we can use .length on it
 		});
