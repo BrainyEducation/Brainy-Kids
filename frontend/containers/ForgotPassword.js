@@ -52,6 +52,13 @@ class ForgotPassword extends Component {
 		});
 	}
 
+	validUsernamePasswordAlert(description) {
+		notification['success']({
+			message: 'Success!',
+			description,
+		});
+	}
+
 	onSubmit() {
 		const { email } = this.state;
 		const { login } = this.props;
@@ -84,14 +91,13 @@ class ForgotPassword extends Component {
 					});
 					this.invalidUsernamePasswordAlert(json.message);
 				} else {
-					this.invalidUsernamePasswordAlert(
+					this.validUsernamePasswordAlert(
 						"Success! Check your email for further instructions."
 					);
 					
-					// login(json.token, json.teacher);
-					// setTimeout(() => {
-					// 	this.props.history.replace('/dashboard');
-					// }, 200);
+					setTimeout(() => {
+						this.props.history.replace('/');
+					}, 1000);
 				}
 			})
 			.catch(err => {
