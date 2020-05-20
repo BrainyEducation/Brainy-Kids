@@ -23,6 +23,11 @@ async function maxId() {
     }
 }
 
+function randomNumberString(length){
+    const arr = Array.from(Array(length).keys()).map( x => Math.floor(Math.random() * Math.floor(9)));
+    return arr.join('');
+}
+
 function nextLetter(letter){
     const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
     const index = letters.indexOf(letter);
@@ -337,13 +342,13 @@ module.exports.forgotPasswordPost = async (req, res) => {
 // Function that reset password email links to
 module.exports.forgotPasswordGet = async (req, res) => {
 
-    const DEFAULT_NEW_PASSWORD = 'youshouldreallychangethis';
-    
+    const NEW_PASSWORD = randomNumberString(24);
+
     Teacher.findById(req.query.tid)
         .then(teacher => {
             if (teacher) {
                 if (teacher.password_reset_model._id == req.query.pid) {
-                    teacher.password = hash(DEFAULT_NEW_PASSWORD);
+                    teacher.password = hash( NEW_PASSWORD );
                     teacher.password_reset_model = null;
                     teacher.save(err => {
                         if (err) {
@@ -351,7 +356,7 @@ module.exports.forgotPasswordGet = async (req, res) => {
                         } else {
                             return res.json({
                                 status: 'ok',
-                                message: 'Your new password is: ' + DEFAULT_NEW_PASSWORD
+                                message: 'Your new password is: ' + NEW_PASSWORD,
                             });
                         }
                     });
