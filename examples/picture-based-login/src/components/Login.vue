@@ -2,10 +2,15 @@
  <div>
    	<div class="picture-login">
 		<h1>Student Sign in</h1>
-     	<!-- <input required v-model="id" type="text" placeholder="ID Number"/> -->
 		<div class="picture-login__password">
 			<template v-for="(number, index) in pass">
-				<img :src="require(`@/assets/${number}.png`)"  :key="index">
+				<div v-if="number === 0" class="picture-login__placeholder" :key="index"></div>
+				<img
+					v-else
+					:src="require(`@/assets/${number}.png`)"
+					:key="number"
+					@click="imgReplace(index)"
+				>
 			</template>
 			<template v-for="(number, index) in placeholder">
 				<div class="picture-login__placeholder" :key="index"></div>
@@ -21,6 +26,7 @@
 </template>
 
 <script>
+	import Vue from 'vue';
 	export default {
 		data(){
 			return {
@@ -41,8 +47,15 @@
 				if(this.pass.length <5){
 					this.pass.push( this.letters[index]);
 					this.placeholder.pop()
+				} else {
+					Vue.set(this.pass, this.pass.indexOf(0), this.letters[index]);
 				}
 			},
+			
+			imgReplace(index){
+				Vue.set(this.pass, index, 0)
+			},
+
 		 	login() {
 		   		this.$store.dispatch('login', { id: this.id })
 		   		.then(() => this.$router.push('/'))
@@ -94,7 +107,7 @@ label, input {
 	display: inline-block;
 }
 .picture-login__placeholder {
-	border: #444 3px solid;
+	border: #797979 2px dotted;
 }
 
 .picture-login__numbers {
