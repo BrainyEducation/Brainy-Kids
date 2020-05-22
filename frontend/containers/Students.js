@@ -166,27 +166,20 @@ class Students extends Component {
 			var lines = e.target.result.split('\n');
 			for (var i = 0; i < lines.length; i++) {
 				var currentline = lines[i].split(',');
-				if (currentline[0].length === 4) {
-					currentline[0] = '00' + currentline[0];
-				} else if (currentline[0].length === 5) {
-					currentline[0] = '0' + currentline[0];
-				}
-				var teacher_id_from_csv = currentline[0].substr(0, 3);
+				var teacher_id_from_csv = currentline[0].substr(1, 3);
 				if (currentline[0].length === 0 && currentline[1].length <= 1) {
 					continue;
-				} else if (currentline[0].length !== 6) {
+				} else if (currentline[0].length !== 7) {
 					var error_text =
 						'The line containing ' +
 						currentline[1] +
-						' should be of format 001001 where the first 3' +
-						' digits are the teacher id and the last 3 are student id.';
+						' should be of format aaaaa where the first 3' +
+						' digits are the teacher id and the last 2 are student id.';
 					message.error(error_text);
 					continue;
 				}
 				if (teacher_id_from_csv === teacher.teacher_id) {
-					var csv_id = currentline[0].substr(
-						currentline[0].length - 3
-					);
+					var csv_id = currentline[0].substr(4, 2);
 					nameMap.set(csv_id, currentline[1]);
 				} else {
 					var error_text =
