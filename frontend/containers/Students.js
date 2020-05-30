@@ -28,16 +28,10 @@ const PopoverComponent = () => {
 			style={{ display: 'inline-block' }}
 			content={
 				<p style={{ maxWidth: 400 }}>
-					To ensure student privacy, we do not store student names in
-					our database.<br />
-					<br />To view the student names on this page, you'll need to
-					upload the Excel sheet which will correlate the student IDs
-					to their respective names.<br />
-					<br />This spreadsheet will <b>not</b> be uploaded to our
-					servers.
+					To ensure student privacy, we ask you only use first names or first name + last name initial.<br />
 				</p>
 			}
-			title="Why are there no names?">
+			title="Student names?">
 			<Icon
 				type="info-circle"
 				style={{ marginLeft: 10, position: 'relative', top: -5 }}
@@ -54,17 +48,29 @@ class Students extends Component {
 			modalVisibility: false,
 			createStudentLoading: false,
 			student_id: '',
-			csv: [],
+			studentNamesHidden: false,
 		};
 		
 		this.createStudent = this.createStudent.bind(this);
-		this.newStudentOnChange = this.newStudentOnChange.bind(this);
+		this.newStudentOnChangeId = this.newStudentOnChangeId.bind(this);
+		this.newStudentOnChangeName = this.newStudentOnChangeName.bind(this);
 		this.setModalVisibility = this.setModalVisibility.bind(this);
+		this.hideStudentNames = this.hideStudentNames.bind(this);
+	}
+
+	studentReference(student) {
+		if(this.state.studentNamesHidden) return `<Name Hidden>  –– ID: ${ student.student_id}`;
+		return (
+			student.student_name === null || 
+		!('student_name' in student)
+			? '<Name not set>'
+			:  student.student_name) + ` –– ID: ${ student.student_id}`;
 	}
 
 	createStudent() {
 		const { token, students } = this.props;
 		const { student_id } = this.state;
+		const { student_name } = this.state;
 		if (!student_id || student_id.length !== 2) {
 			return notification.error({
 				message: 'Uh oh!',
@@ -94,6 +100,7 @@ class Students extends Component {
 			body: JSON.stringify({
 				teacher: this.props.teacher._id,
 				student_id,
+				student_name,
 			}),
 		})
 			.then(res => res.json())
@@ -140,74 +147,17 @@ class Students extends Component {
 		this.setState({ modalVisibility: value, student_id: '' });
 	}
 
-	onChange(e) {
-		const reader = new FileReader();
-
-		reader.onload = (input => {
-			return function(e) {};
-		})(e.file);
-
-		reader.readAsDataURL(e.file);
+	hideStudentNames(){
+		this.setState({ studentNamesHidden: !this.state.studentNamesHidden });
 	}
 
-	newStudentOnChange(e) {
+	newStudentOnChangeId(e) {
 		const student_id = e.target.value;
-		this.setState({
-			student_id: `${student_id}`, // We cast it to a string so we can use .length on it
-		});
+		this.setState({student_id});
 	}
-
-	fileToJson(file) {
-		const { teacher, students, loadStudentName } = this.props;
-		var fr = new FileReader();
-
-		var nameMap = new Map();
-		fr.onload = function(e) {
-			var lines = e.target.result.split('\n');
-			for (var i = 0; i < lines.length; i++) {
-				var currentline = lines[i].split(',');
-				var teacher_id_from_csv = currentline[0].substr(1, 3);
-				if (currentline[0].length === 0 && currentline[1].length <= 1) {
-					continue;
-				} else if (currentline[0].length !== 7) {
-					var error_text =
-						'The line containing ' +
-						currentline[1] +
-						' should be of format aaaaa where the first 3' +
-						' digits are the teacher id and the last 2 are student id.';
-					message.error(error_text);
-					continue;
-				}
-				if (teacher_id_from_csv === teacher.teacher_id) {
-					var csv_id = currentline[0].substr(4, 2);
-					nameMap.set(csv_id, currentline[1]);
-				} else {
-					var error_text =
-						currentline[1] +
-						' does not have the correct 3 digit teacher_id';
-					message.error(error_text);
-				}
-			}
-			for (var n = 0; n < students.length; n++) {
-				var s = students[n]['student_id'];
-				if (nameMap.has(s) && s !== null) {
-					loadStudentName(nameMap.get(s), s);
-				}
-			}
-		};
-		fr.readAsText(file);
-	}
-
-	genCsvArr() {
-		const { teacher, students } = this.props;
-		var csv_arr = [];
-		students.forEach(function(s) {
-			let first = teacher.teacher_id.toString() + s.student_id.toString();
-			let second = '<Insert Student Name Here>';
-			let temp = [first, second];
-			csv_arr.push(temp);
-		});
-		this.setState({ csv: csv_arr });
+	newStudentOnChangeName(e) {
+		const student_name = e.target.value;
+		this.setState({student_name});
 	}
 
 	render() {
@@ -222,29 +172,14 @@ class Students extends Component {
 				popover={<PopoverComponent />}
 				extra={
 					<div>
-						<Upload
+						<Button
 							style={{
 								margin: 5,
 							}}
-							accept={'.csv'}
-							onChange={this.onChange}
-							showUploadList={false}
-							beforeUpload={file => {
-								this.fileToJson(file);
-								return false;
-							}}>
-							<Button>Upload Names</Button>
-						</Upload>
-						<CSVLink filename="students_template" data={csv}>
-							<Button
-								style={{
-									margin: 5,
-								}}
-								type="secondary"
-								onClick={this.genCsvArr.bind(this)}>
-								Download Names Template
-							</Button>
-						</CSVLink>
+							type="danger"
+							onClick={() => this.hideStudentNames() }>
+							{ this.state.studentNamesHidden ? 'Show' : 'Hide' } Student Names
+						</Button>
 						<Button
 							style={{
 								margin: 5,
@@ -255,26 +190,19 @@ class Students extends Component {
 						</Button>
 					</div>
 				}>
-				{/* <div
-					style={{
-						width: '100%',
-						backgroundColor: 'rgb(245, 245, 245)',
-						paddingTop: 10,
-						paddingBottom: 10,
-						textAlign: 'center',
-					}}>
-				</div> */}
 				<NewStudentModal
 					visible={this.state.modalVisibility}
 					loading={createStudentLoading}
 					onOk={this.createStudent}
 					onCancel={() => this.setModalVisibility(false)}
-					onChange={this.newStudentOnChange}
+					onChangeId={this.newStudentOnChangeId}
+					onChangeName={this.newStudentOnChangeName}
 				/>
 				{!students || students.length === 0 ? (
 					<p>You have no students in your classes yet.</p>
 				) : (
 					<List
+						size="small"
 						itemLayout="horizontal"
 						dataSource={students}
 						renderItem={student => (
@@ -282,18 +210,12 @@ class Students extends Component {
 								<List.Item
 									actions={[<Button>View Student</Button>]}>
 									<List.Item.Meta
+										style={{ margin: 0}}
 										title={
-											<p>
-												{student.student_name ===
-													null ||
-												!('student_name' in student)
-													? '<Name not set>'
-													: student.student_name}
-											</p>
+											<span>
+												{this.studentReference(student)}
+											</span>
 										}
-										description={`ID: ${
-											student.student_id
-										}`}
 									/>
 								</List.Item>
 							</Link>
