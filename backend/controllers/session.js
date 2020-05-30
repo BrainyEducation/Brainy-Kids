@@ -22,6 +22,9 @@ async function maxId() {
         return 'aaa';
     }
 }
+function randomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
 
 function randomNumberString(length){
     const arr = Array.from(Array(length).keys()).map( x => Math.floor(Math.random() * Math.floor(9)));
@@ -53,6 +56,28 @@ async function nextId(previousId) {
         return `${firstL}aa`;
     }
 }
+function randomId() {
+    const l = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+    return `${l[randomInt(26)]}${l[randomInt(26)]}${l[randomInt(26)]}`;
+}
+
+async function generateNewID() {
+    let idAlreadyInUse = false;
+    do {
+        const newId = randomId();
+        console.log(newId);
+        const teacherSearch = await Teacher.find({teacher_id: newId});
+        if( teacherSearch.length > 0) {
+            console.log(newId);
+            idAlreadyInUse = true;
+        } else {
+            console.log(newId);
+            idAlreadyInUse = false;
+            return newId
+        }
+    }
+    while (idAlreadyInUse);
+}
 
 function unexpectedError(error, res) {
     console.log(error);
@@ -64,8 +89,7 @@ function unexpectedError(error, res) {
 }
 
 async function createNewTeacher(name, email, passwordHash, res) {
-    var prevId = await maxId();
-    var id = await nextId(prevId);
+    var id = await generateNewID();
 
     new Teacher({
         name: name,
