@@ -8,6 +8,7 @@ import {
 	Divider,
 	Input,
 	notification,
+	Breadcrumb
 } from 'antd';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -19,7 +20,20 @@ import PageFormat from '../components/PageFormat';
 
 import actions from '../actions';
 
-class Account extends Component {
+const PageBreadcrumb = () => {
+	return (
+		<Breadcrumb>
+			<Breadcrumb.Item>
+				<Link to="/account">My Account</Link>
+			</Breadcrumb.Item>
+			<Breadcrumb.Item>
+				<Link to={`/account/teacherid`}>Change Your Teacher ID</Link>
+			</Breadcrumb.Item>
+		</Breadcrumb>
+	);
+};
+
+class ChangeTeacherId extends Component {
 	constructor(props) {
 		super(props);
 
@@ -33,8 +47,7 @@ class Account extends Component {
 			if (!err) {
 				updateTeacherInformation(
 					teacher._id,
-					values.name,
-					values.email,
+					values.teacher_id
 				);
 			}
 		});
@@ -45,40 +58,33 @@ class Account extends Component {
 		const { loading, teacher } = this.props;
 
 		return (
-			<PageFormat page="account" title="My Account">
+			<PageFormat
+				page="account"
+				title="Change Your Teacher ID"
+				breadcrumb={<PageBreadcrumb />}>
 				<Row>
 					<Col xs={24} sm={20} md={16} lg={12} xl={12}>
 						<Form onSubmit={this.onSubmit} layout="vertical">
-							<FormItem label="Full Name">
-								{getFieldDecorator('name', {
-									initialValue: teacher.name,
+							<FormItem label="Teacher ID">
+							{getFieldDecorator('teacher_id', {
+									initialValue: teacher.teacher_id,
 									rules: [
 										{
-											required: true,
-											message: 'Please enter your name',
+											min: 3,
+											message:
+												'A minimum ID length of 3 is required',
+										},											{
+											max: 3,
+											message:
+												'A maximum ID length of 3 is required',
 										},
 									],
 								})(
 									<Input
 										type="text"
-										placeholder="George Burdell"
-									/>
-								)}
-							</FormItem>
-							<FormItem label="Email">
-								{getFieldDecorator('email', {
-									initialValue: teacher.email,
-									rules: [
-										{
-											type: 'email',
-											required: true,
-											message: 'Please enter your email',
-										},
-									],
-								})(
-									<Input
-										type="email"
-										placeholder="gburdell@gatech.edu"
+										placeholder="ID Number"
+										minLength="3"
+										maxLength="3"
 									/>
 								)}
 							</FormItem>
@@ -92,15 +98,6 @@ class Account extends Component {
 							</FormItem>
 						</Form>
 					</Col>
-				</Row>
-				<Divider />
-				<Row>
-					<Link to="/account/password">
-						<Button>Change Password</Button>
-					</Link>
-					<Link to="/account/teacherid" style={{ marginLeft: '1rem' }}>
-						<Button>Change Teacher ID</Button>
-					</Link>
 				</Row>
 			</PageFormat>
 		);
@@ -122,5 +119,5 @@ export default withRouter(
 	connect(
 		mapStateToProps,
 		mapDispatchToProps
-	)(Form.create()(Account))
+	)(Form.create()(ChangeTeacherId))
 );

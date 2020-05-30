@@ -8,6 +8,7 @@ import AuthGuard from './components/AuthGuard';
 import ForgotPassword from './containers/ForgotPassword';
 import Account from './containers/Account';
 import ChangePassword from './containers/ChangePassword';
+import ChangeTeacherId from './containers/ChangeTeacherId';
 import LoginPage from './containers/LoginPage';
 import Register from './containers/Register';
 import LogoutPage from './containers/LogoutPage';
@@ -46,6 +47,11 @@ const Routes = () => {
 				path="/account/password"
 				exact
 				component={ChangePassword}
+			/>
+			<AuthGuard
+				path="/account/teacherid"
+				exact
+				component={ChangeTeacherId}
 			/>
 			<Route path="/logout" exact component={LogoutPage} />
 			<Route path="*" component={NotFound} />
