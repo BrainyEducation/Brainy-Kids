@@ -48,6 +48,8 @@ class Account extends Component {
 			<PageFormat page="account" title="My Account">
 				<Row>
 					<Col xs={24} sm={20} md={16} lg={12} xl={12}>
+						<h3>Teacher ID: {teacher.teacher_id}</h3>
+						<Divider />
 						<Form onSubmit={this.onSubmit} layout="vertical">
 							<FormItem label="Full Name">
 								{getFieldDecorator('name', {
