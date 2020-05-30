@@ -14,14 +14,6 @@ function hash(password) {
     return bcrypt.hashSync(password, salt);
 }
 
-async function maxId() {
-    var toRet = await Teacher.findOne({}).sort({ teacher_id: 'desc' });
-    if (toRet) {
-        return toRet.teacher_id;
-    } else {
-        return 'aaa';
-    }
-}
 function randomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
   }
@@ -31,31 +23,6 @@ function randomNumberString(length){
     return arr.join('');
 }
 
-function nextLetter(letter){
-    const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
-    const index = letters.indexOf(letter);
-    if(letter === 'z') return 'a';
-    return letters[index+1];
-}
-
-async function nextId(previousId) {
-    const l = previousId.split('');
-    if(l[2] !== 'z') {
-        // [aab] -> // [aac]
-        const lastL = nextLetter(l[2]);
-        return `${l[0]}${l[1]}${lastL}`;
-    
-    } else if(l[2] === 'z') {
-        // [bbz] -> // [bca]
-        const middleLetter = nextLetter(l[1]);
-        return `${l[0]}${middleLetter}a`;
-    
-    } else if(l[1] === 'z' && l[2] === 'z') {
-        // [bzz] -> // [caa]
-        const firstL = nextLetter(l[0]);
-        return `${firstL}aa`;
-    }
-}
 function randomId() {
     const l = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
     return `${l[randomInt(26)]}${l[randomInt(26)]}${l[randomInt(26)]}`;
