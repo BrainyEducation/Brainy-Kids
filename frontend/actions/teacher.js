@@ -74,7 +74,7 @@ const updateTeacherDataError = error => {
 	};
 };
 
-module.exports.updateTeacherInformation = (id, name, email) => {
+module.exports.updateTeacherInformation = (id, name, email, teacher_id) => {
 	return (dispatch, getState) => {
 		dispatch(reloadTeacherDataLoading());
 		fetch(`/api/teacher/${id}`, {
@@ -83,6 +83,7 @@ module.exports.updateTeacherInformation = (id, name, email) => {
 			body: JSON.stringify({
 				name,
 				email,
+				teacher_id,
 			}),
 		})
 			.then(res => res.json())

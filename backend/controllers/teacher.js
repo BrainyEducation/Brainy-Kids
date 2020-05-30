@@ -44,9 +44,14 @@ module.exports.update = (req, res) => {
                     message: 'Teacher is not found',
                 });
             }
-
-            // Update the student_id if the body request contains a student_id
+            
+            // Update the teacher_id if the body request contains a teacher_id
             if (req.body.teacher_id) {
+
+                // check new teacher ID in db
+                // if ID exists return 500 with message
+                // if not update
+
                 teacher.teacher_id = req.body.teacher_id;
             }
 

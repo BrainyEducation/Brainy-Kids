@@ -34,7 +34,8 @@ class Account extends Component {
 				updateTeacherInformation(
 					teacher._id,
 					values.name,
-					values.email
+					values.email,
+					values.teacher_id
 				);
 			}
 		});
@@ -79,6 +80,16 @@ class Account extends Component {
 									<Input
 										type="email"
 										placeholder="gburdell@gatech.edu"
+									/>
+								)}
+							</FormItem>
+							<FormItem label="Teacher ID">
+							{getFieldDecorator('teacher_id', {
+									initialValue: teacher.teacher_id,
+								})(
+									<Input
+										type="text"
+										placeholder="ID Number"
 									/>
 								)}
 							</FormItem>
