@@ -96,7 +96,7 @@ class Students extends Component {
 			body: JSON.stringify({
 				teacher: this.props.teacher._id,
 				student_id,
-				name: student_name,
+				student_name,
 			}),
 		})
 			.then(res => res.json())
@@ -281,6 +281,7 @@ class Students extends Component {
 					<p>You have no students in your classes yet.</p>
 				) : (
 					<List
+						size="small"
 						itemLayout="horizontal"
 						dataSource={students}
 						renderItem={student => (
@@ -288,18 +289,17 @@ class Students extends Component {
 								<List.Item
 									actions={[<Button>View Student</Button>]}>
 									<List.Item.Meta
+										style={{ margin: 0}}
 										title={
-											<p>
+											<span>
 												{student.student_name ===
 													null ||
 												!('student_name' in student)
 													? '<Name not set>'
-													: student.student_name}
-											</p>
+													:  student.student_name}
+												{` –– ID: ${ student.student_id}`}
+											</span>
 										}
-										description={`ID: ${
-											student.student_id
-										}`}
 									/>
 								</List.Item>
 							</Link>

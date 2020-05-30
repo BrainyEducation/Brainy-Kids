@@ -8,9 +8,9 @@ const schema = mongoose.Schema(
 			required: true,
 		},
 		// Student's name + Initial (First + Last Initial)
-		name: {
+		student_name: {
 			type: String,
-			required: true,
+			required: false,
 		},
 		// Reference to teacher
 		teacher: {
