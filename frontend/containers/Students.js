@@ -28,16 +28,10 @@ const PopoverComponent = () => {
 			style={{ display: 'inline-block' }}
 			content={
 				<p style={{ maxWidth: 400 }}>
-					To ensure student privacy, we do not store student names in
-					our database.<br />
-					<br />To view the student names on this page, you'll need to
-					upload the Excel sheet which will correlate the student IDs
-					to their respective names.<br />
-					<br />This spreadsheet will <b>not</b> be uploaded to our
-					servers.
+					To ensure student privacy, we ask you only use first names or first name + last name initial.<br />
 				</p>
 			}
-			title="Why are there no names?">
+			title="Student names?">
 			<Icon
 				type="info-circle"
 				style={{ marginLeft: 10, position: 'relative', top: -5 }}
