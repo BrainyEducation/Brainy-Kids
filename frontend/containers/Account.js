@@ -86,10 +86,23 @@ class Account extends Component {
 							<FormItem label="Teacher ID">
 							{getFieldDecorator('teacher_id', {
 									initialValue: teacher.teacher_id,
+									rules: [
+										{
+											min: 3,
+											message:
+												'A minimum ID length of 3 is required',
+										},											{
+											max: 3,
+											message:
+												'A maximum ID length of 3 is required',
+										},
+									],
 								})(
 									<Input
 										type="text"
 										placeholder="ID Number"
+										minLength="3"
+										maxLength="3"
 									/>
 								)}
 							</FormItem>

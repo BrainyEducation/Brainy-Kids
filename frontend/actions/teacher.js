@@ -89,6 +89,7 @@ module.exports.updateTeacherInformation = (id, name, email, teacher_id) => {
 			.then(res => res.json())
 			.then(json => {
 				if (json.status !== 'ok') {
+					dispatch(updateTeacherDataError(json.teacher));
 					notification.error({
 						message: 'Oops!',
 						description:
