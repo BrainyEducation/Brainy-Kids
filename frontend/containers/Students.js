@@ -54,7 +54,6 @@ class Students extends Component {
 			modalVisibility: false,
 			createStudentLoading: false,
 			student_id: '',
-			csv: [],
 			studentNamesHidden: false,
 		};
 		
@@ -158,16 +157,6 @@ class Students extends Component {
 		this.setState({ studentNamesHidden: !this.state.studentNamesHidden });
 	}
 
-	onChange(e) {
-		const reader = new FileReader();
-
-		reader.onload = (input => {
-			return function(e) {};
-		})(e.file);
-
-		reader.readAsDataURL(e.file);
-	}
-
 	newStudentOnChangeId(e) {
 		const student_id = e.target.value;
 		this.setState({student_id});
@@ -175,59 +164,6 @@ class Students extends Component {
 	newStudentOnChangeName(e) {
 		const student_name = e.target.value;
 		this.setState({student_name});
-	}
-
-	fileToJson(file) {
-		const { teacher, students, loadStudentName } = this.props;
-		var fr = new FileReader();
-
-		var nameMap = new Map();
-		fr.onload = function(e) {
-			var lines = e.target.result.split('\n');
-			for (var i = 0; i < lines.length; i++) {
-				var currentline = lines[i].split(',');
-				var teacher_id_from_csv = currentline[0].substr(1, 3);
-				if (currentline[0].length === 0 && currentline[1].length <= 1) {
-					continue;
-				} else if (currentline[0].length !== 7) {
-					var error_text =
-						'The line containing ' +
-						currentline[1] +
-						' should be of format aaaaa where the first 3' +
-						' digits are the teacher id and the last 2 are student id.';
-					message.error(error_text);
-					continue;
-				}
-				if (teacher_id_from_csv === teacher.teacher_id) {
-					var csv_id = currentline[0].substr(4, 2);
-					nameMap.set(csv_id, currentline[1]);
-				} else {
-					var error_text =
-						currentline[1] +
-						' does not have the correct 3 digit teacher_id';
-					message.error(error_text);
-				}
-			}
-			for (var n = 0; n < students.length; n++) {
-				var s = students[n]['student_id'];
-				if (nameMap.has(s) && s !== null) {
-					loadStudentName(nameMap.get(s), s);
-				}
-			}
-		};
-		fr.readAsText(file);
-	}
-
-	genCsvArr() {
-		const { teacher, students } = this.props;
-		var csv_arr = [];
-		students.forEach(function(s) {
-			let first = teacher.teacher_id.toString() + s.student_id.toString();
-			let second = '<Insert Student Name Here>';
-			let temp = [first, second];
-			csv_arr.push(temp);
-		});
-		this.setState({ csv: csv_arr });
 	}
 
 	render() {
@@ -242,29 +178,6 @@ class Students extends Component {
 				popover={<PopoverComponent />}
 				extra={
 					<div>
-						<Upload
-							style={{
-								margin: 5,
-							}}
-							accept={'.csv'}
-							onChange={this.onChange}
-							showUploadList={false}
-							beforeUpload={file => {
-								this.fileToJson(file);
-								return false;
-							}}>
-							<Button>Upload Names</Button>
-						</Upload>
-						<CSVLink filename="students_template" data={csv}>
-							<Button
-								style={{
-									margin: 5,
-								}}
-								type="secondary"
-								onClick={this.genCsvArr.bind(this)}>
-								Download Names Template
-							</Button>
-						</CSVLink>
 						<Button
 							style={{
 								margin: 5,
@@ -283,15 +196,6 @@ class Students extends Component {
 						</Button>
 					</div>
 				}>
-				{/* <div
-					style={{
-						width: '100%',
-						backgroundColor: 'rgb(245, 245, 245)',
-						paddingTop: 10,
-						paddingBottom: 10,
-						textAlign: 'center',
-					}}>
-				</div> */}
 				<NewStudentModal
 					visible={this.state.modalVisibility}
 					loading={createStudentLoading}
