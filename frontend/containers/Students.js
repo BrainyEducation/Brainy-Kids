@@ -55,12 +55,23 @@ class Students extends Component {
 			createStudentLoading: false,
 			student_id: '',
 			csv: [],
+			studentNamesHidden: false,
 		};
 		
 		this.createStudent = this.createStudent.bind(this);
 		this.newStudentOnChangeId = this.newStudentOnChangeId.bind(this);
 		this.newStudentOnChangeName = this.newStudentOnChangeName.bind(this);
 		this.setModalVisibility = this.setModalVisibility.bind(this);
+		this.hideStudentNames = this.hideStudentNames.bind(this);
+	}
+
+	studentReference(student) {
+		if(this.state.studentNamesHidden) return `<Name Hidden>  –– ID: ${ student.student_id}`;
+		return (
+			student.student_name === null || 
+		!('student_name' in student)
+			? '<Name not set>'
+			:  student.student_name) + ` –– ID: ${ student.student_id}`;
 	}
 
 	createStudent() {
@@ -141,6 +152,10 @@ class Students extends Component {
 
 	setModalVisibility(value) {
 		this.setState({ modalVisibility: value, student_id: '' });
+	}
+
+	hideStudentNames(){
+		this.setState({ studentNamesHidden: !this.state.studentNamesHidden });
 	}
 
 	onChange(e) {
@@ -254,6 +269,14 @@ class Students extends Component {
 							style={{
 								margin: 5,
 							}}
+							type="danger"
+							onClick={() => this.hideStudentNames() }>
+							{ this.state.studentNamesHidden ? 'Show' : 'Hide' } Student Names
+						</Button>
+						<Button
+							style={{
+								margin: 5,
+							}}
 							type="primary"
 							onClick={() => this.setModalVisibility(true)}>
 							New Student
@@ -292,12 +315,7 @@ class Students extends Component {
 										style={{ margin: 0}}
 										title={
 											<span>
-												{student.student_name ===
-													null ||
-												!('student_name' in student)
-													? '<Name not set>'
-													:  student.student_name}
-												{` –– ID: ${ student.student_id}`}
+												{this.studentReference(student)}
 											</span>
 										}
 									/>
