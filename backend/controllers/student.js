@@ -47,6 +47,7 @@ module.exports.create = (req, res) => {
 
             new Student({
                 student_id: req.body.student_id,
+                name: req.body.name,
                 teacher: teacher._id,
                 deleted:
                     req.body.deleted !== undefined ? req.body.deleted : false,
@@ -100,6 +101,11 @@ module.exports.update = (req, res) => {
             student.student_id = req.body.student_id
                 ? req.body.student_id
                 : student.student_id;
+
+            // Update the name if the body request contains a name
+            student.name = req.body.name
+            ? req.body.name
+            : student.name;
 
             // Update the student if the body request contains deleted
             student.deleted =

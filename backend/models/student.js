@@ -7,6 +7,11 @@ const schema = mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		// Student's name + Initial (First + Last Initial)
+		name: {
+			type: String,
+			required: true,
+		},
 		// Reference to teacher
 		teacher: {
             type: mongoose.Schema.Types.ObjectId,

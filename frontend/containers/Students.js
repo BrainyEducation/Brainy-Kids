@@ -58,13 +58,15 @@ class Students extends Component {
 		};
 		
 		this.createStudent = this.createStudent.bind(this);
-		this.newStudentOnChange = this.newStudentOnChange.bind(this);
+		this.newStudentOnChangeId = this.newStudentOnChangeId.bind(this);
+		this.newStudentOnChangeName = this.newStudentOnChangeName.bind(this);
 		this.setModalVisibility = this.setModalVisibility.bind(this);
 	}
 
 	createStudent() {
 		const { token, students } = this.props;
 		const { student_id } = this.state;
+		const { student_name } = this.state;
 		if (!student_id || student_id.length !== 2) {
 			return notification.error({
 				message: 'Uh oh!',
@@ -94,6 +96,7 @@ class Students extends Component {
 			body: JSON.stringify({
 				teacher: this.props.teacher._id,
 				student_id,
+				name: student_name,
 			}),
 		})
 			.then(res => res.json())
@@ -150,11 +153,13 @@ class Students extends Component {
 		reader.readAsDataURL(e.file);
 	}
 
-	newStudentOnChange(e) {
+	newStudentOnChangeId(e) {
 		const student_id = e.target.value;
-		this.setState({
-			student_id: `${student_id}`, // We cast it to a string so we can use .length on it
-		});
+		this.setState({student_id});
+	}
+	newStudentOnChangeName(e) {
+		const student_name = e.target.value;
+		this.setState({student_name});
 	}
 
 	fileToJson(file) {
@@ -269,7 +274,8 @@ class Students extends Component {
 					loading={createStudentLoading}
 					onOk={this.createStudent}
 					onCancel={() => this.setModalVisibility(false)}
-					onChange={this.newStudentOnChange}
+					onChangeId={this.newStudentOnChangeId}
+					onChangeName={this.newStudentOnChangeName}
 				/>
 				{!students || students.length === 0 ? (
 					<p>You have no students in your classes yet.</p>
