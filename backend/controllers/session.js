@@ -14,44 +14,36 @@ function hash(password) {
     return bcrypt.hashSync(password, salt);
 }
 
-async function maxId() {
-    var toRet = await Teacher.findOne({}).sort({ teacher_id: 'desc' });
-    if (toRet) {
-        return toRet.teacher_id;
-    } else {
-        return 'aaa';
-    }
-}
+function randomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
 
 function randomNumberString(length){
     const arr = Array.from(Array(length).keys()).map( x => Math.floor(Math.random() * Math.floor(9)));
     return arr.join('');
 }
 
-function nextLetter(letter){
-    const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
-    const index = letters.indexOf(letter);
-    if(letter === 'z') return 'a';
-    return letters[index+1];
+function randomId() {
+    const l = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+    return `${l[randomInt(26)]}${l[randomInt(26)]}${l[randomInt(26)]}`;
 }
 
-async function nextId(previousId) {
-    const l = previousId.split('');
-    if(l[2] !== 'z') {
-        // [aab] -> // [aac]
-        const lastL = nextLetter(l[2]);
-        return `${l[0]}${l[1]}${lastL}`;
-    
-    } else if(l[2] === 'z') {
-        // [bbz] -> // [bca]
-        const middleLetter = nextLetter(l[1]);
-        return `${l[0]}${middleLetter}a`;
-    
-    } else if(l[1] === 'z' && l[2] === 'z') {
-        // [bzz] -> // [caa]
-        const firstL = nextLetter(l[0]);
-        return `${firstL}aa`;
+async function generateNewID() {
+    let idAlreadyInUse = false;
+    do {
+        const newId = randomId();
+        console.log(newId);
+        const teacherSearch = await Teacher.find({teacher_id: newId});
+        if( teacherSearch.length > 0) {
+            console.log(newId);
+            idAlreadyInUse = true;
+        } else {
+            console.log(newId);
+            idAlreadyInUse = false;
+            return newId
+        }
     }
+    while (idAlreadyInUse);
 }
 
 function unexpectedError(error, res) {
@@ -64,8 +56,7 @@ function unexpectedError(error, res) {
 }
 
 async function createNewTeacher(name, email, passwordHash, res) {
-    var prevId = await maxId();
-    var id = await nextId(prevId);
+    var id = await generateNewID();
 
     new Teacher({
         name: name,

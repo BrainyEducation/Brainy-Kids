@@ -45,9 +45,16 @@ module.exports.update = (req, res) => {
                 });
             }
 
-            // Update the student_id if the body request contains a student_id
+            // Update the teacher_id if the body request contains a teacher_id
             if (req.body.teacher_id) {
-                teacher.teacher_id = req.body.teacher_id;
+                const newTeacherId = (req.body.teacher_id).toLowerCase()
+                // check new teacher ID in db
+                const teacherSearch = await Teacher.find({teacher_id: newTeacherId});
+                if( teacherSearch.length > 0) {
+                    throw 'TEACHER_FOUND';
+                } else {
+                    teacher.teacher_id = newTeacherId
+                }
             }
 
             // Update the name if the body request contains a name
@@ -74,10 +81,14 @@ module.exports.update = (req, res) => {
                 });
         })
         .catch(err => {
+            const errMessage = (err === 'TEACHER_FOUND') 
+                ? 'The Teacher ID you selected is already in use please choose another'
+                : 'An unexpected internal server error has occurred!';
+                
             return res.status(500).json({
                 status: 'error',
                 error: err,
-                message: 'An unexpected internal server error has occurred!',
+                message: errMessage,
             });
         });
 };
