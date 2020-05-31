@@ -47,6 +47,8 @@ class ChangeTeacherId extends Component {
 			if (!err) {
 				updateTeacherInformation(
 					teacher._id,
+					teacher.name,
+					teacher.email,
 					values.teacher_id
 				);
 			}
