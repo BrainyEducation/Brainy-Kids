@@ -110,11 +110,7 @@ class Students extends Component {
 			.then(json => {
 				this.setState({ createStudentLoading: false });
 				if (json.status === 'ok') {
-					this.props.students.map(s => {
-						if (s.student_id === student_id ) {
-							s.student_name = student_name
-						}
-					})
+					this.props.appendStudent(json.student);
 					notification.success({
 						message: 'Success!',
 						description:
@@ -157,8 +153,6 @@ class Students extends Component {
 		const studentavailable = students.find(s => {
 			return s.student_id === student_id;
 		});
-		
-		console.log(studentavailable)
 
 		if (!studentavailable) {
 			return notification.error({
@@ -291,7 +285,7 @@ class Students extends Component {
 					loading={createStudentLoading}
 					onOk={this.createStudent}
 					onCancel={() => this.setModalVisibility(false)}
-					onChangeId={this.studentOnChangeId}
+					onChangeId={this.newStudentOnChangeId}
 					onChangeName={this.studentOnChangeName}
 				/>
 				<EditStudentModal
