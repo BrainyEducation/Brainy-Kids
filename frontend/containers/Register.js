@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Row, Col, Card, Input, Icon, Button, notification } from 'antd';
+import { Row, Col, Card, Input, Icon, Button, notification, Alert } from 'antd';
 
 import { Link, withRouter } from 'react-router-dom';
 
@@ -149,6 +149,11 @@ class Register extends Component {
 						<h3 style={{ textAlign: 'center' }}>Teacher Portal</h3>
 					</div>
 					<Card title="Create Your Teacher Account">
+						<Alert
+							showIcon
+							type="info"
+							message={`When you first access the Data Analytics Platform (DAP) the system will automatically create for you a random 3-letter ID/password.  You should then change that to a 3-letter (and/or number) ID of your choice.  If you select an ID which someone is already using, you will be prompted to choose a different ID.`}
+						/>
 						<div style={{ textAlign: 'right' }}>
 							<Input
 								placeholder="Name"
