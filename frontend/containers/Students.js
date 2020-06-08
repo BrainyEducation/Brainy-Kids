@@ -28,7 +28,7 @@ const PopoverComponent = () => {
 			style={{ display: 'inline-block' }}
 			content={
 				<p style={{ maxWidth: 400 }}>
-					To ensure student privacy, we ask you only use first names or first name + last name initial.<br />
+					Student Names/Nicknames are hidden by default. You can reveal them using the 'show student names' button on the right.
 				</p>
 			}
 			title="Student names?">
