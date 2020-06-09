@@ -18,6 +18,19 @@ const schema = mongoose.Schema(
             ref: 'Teacher',
 			required: true,
 		},
+		
+		progress: [{
+			program_id: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'Program',
+				required: false 
+			},
+			program_percentage: {
+				type: String,
+				required: false
+			}
+		}],
+
 		// Defines if this student has been deleted or not. true = deleted
 		deleted: {
 			type: Boolean,

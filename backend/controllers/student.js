@@ -117,6 +117,21 @@ module.exports.update = (req, res) => {
             student.teacher = req.body.teacher
                 ? req.body.teacher
                 : student.teacher;
+            
+            // Update the program progress if the body request contains a progress update
+            if (req.body.program_id) {
+
+                const programExists = student.progress.findIndex(p => p.program_id.equals(req.body.program_id));
+
+                if( programExists >= 0) {
+                    student.progress[programExists].program_percentage = req.body.program_percentage
+                } else {
+                    student.progress.push({
+                        program_id: req.body.program_id,
+                        program_percentage: req.body.program_percentage,
+                    });
+                }
+            }
 
             const updated = await student.save();
 

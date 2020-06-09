@@ -19,6 +19,7 @@ import { CSVLink, CSVDownload } from 'react-csv';
 
 import PageFormat from '../components/PageFormat';
 import NewStudentModal from '../components/NewStudentModal';
+import EditStudentModal from '../components/EditStudentModal';
 
 import actions from '../actions';
 
@@ -28,7 +29,7 @@ const PopoverComponent = () => {
 			style={{ display: 'inline-block' }}
 			content={
 				<p style={{ maxWidth: 400 }}>
-					To ensure student privacy, we ask you only use first names or first name + last name initial.<br />
+					Student Names/Nicknames are hidden by default. You can reveal them using the 'show student names' button on the right.
 				</p>
 			}
 			title="Student names?">
@@ -46,14 +47,16 @@ class Students extends Component {
 
 		this.state = {
 			modalVisibility: false,
+			editStudentModalVisibility: false,
 			createStudentLoading: false,
 			student_id: '',
-			studentNamesHidden: false,
+			studentNamesHidden: true,
 		};
 		
 		this.createStudent = this.createStudent.bind(this);
+		this.editStudent = this.editStudent.bind(this);
 		this.newStudentOnChangeId = this.newStudentOnChangeId.bind(this);
-		this.newStudentOnChangeName = this.newStudentOnChangeName.bind(this);
+		this.studentOnChangeName = this.studentOnChangeName.bind(this);
 		this.setModalVisibility = this.setModalVisibility.bind(this);
 		this.hideStudentNames = this.hideStudentNames.bind(this);
 	}
@@ -136,6 +139,80 @@ class Students extends Component {
 			});
 	}
 
+	editStudent() {
+		const { token, students } = this.props;
+		const { student_id } = this.state;
+		const { student_name } = this.state;
+		if (!student_id || student_id.length !== 2) {
+			return notification.error({
+				message: 'Uh oh!',
+				description: 'Please enter a 2-digit student ID number',
+			});
+		}
+
+		const studentavailable = students.find(s => {
+			return s.student_id === student_id;
+		});
+
+		if (!studentavailable) {
+			return notification.error({
+				message: 'Uh oh!',
+				description: 'That student ID does not exist',
+			});
+		}
+
+		this.setState({ createStudentLoading: true });
+
+		fetch(`/api/student/${studentavailable._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				teacher: this.props.teacher._id,
+				student_id,
+				student_name,
+			}),
+		})
+			.then(res => res.json())
+			.then(json => {
+				this.setState({ createStudentLoading: false });
+				if (json.status === 'ok') {
+					
+					this.setState({ students: this.props.students.map( s => {
+						if (s.student_id === studentavailable.student_id) s.student_name = student_name
+					}) });
+
+					notification.success({
+						message: 'Success!',
+						description:
+							'That student has been updated successfully!',
+					});
+					this.setStudentEditModalVisibility(false);
+				} else {
+					notification.error({
+						message: 'Uh oh!',
+						description:
+							json.errors && json.errors.length > 0
+								? json.errors[0].msg
+								: json.message ||
+								  'An unexpected system error has occurred.',
+					});
+				}
+			})
+			.catch(err => {
+				console.error(err);
+				this.setState({ createStudentLoading: true });
+				notification.error({
+					message: 'System error',
+					description:
+						"Uh oh! An unexpected system error has occurred. We're sorry!",
+				});
+			});
+	}
+
+
 	componentWillMount() {
 		const { students, loadStudents } = this.props;
 		if (!students) {
@@ -147,6 +224,11 @@ class Students extends Component {
 		this.setState({ modalVisibility: value, student_id: '' });
 	}
 
+	setStudentEditModalVisibility(value) {
+		this.setState({ editStudentModalVisibility: value, student_id: '' });
+	}
+
+
 	hideStudentNames(){
 		this.setState({ studentNamesHidden: !this.state.studentNamesHidden });
 	}
@@ -155,10 +237,11 @@ class Students extends Component {
 		const student_id = e.target.value;
 		this.setState({student_id});
 	}
-	newStudentOnChangeName(e) {
+	studentOnChangeName(e) {
 		const student_name = e.target.value;
 		this.setState({student_name});
 	}
+
 
 	render() {
 		const { teacher, students, loading, error } = this.props;
@@ -188,6 +271,13 @@ class Students extends Component {
 							onClick={() => this.setModalVisibility(true)}>
 							New Student
 						</Button>
+						<Button
+							style={{
+								margin: 5,
+							}}
+							onClick={() => this.setStudentEditModalVisibility(true)}>
+							Edit Student
+						</Button>
 					</div>
 				}>
 				<NewStudentModal
@@ -196,7 +286,15 @@ class Students extends Component {
 					onOk={this.createStudent}
 					onCancel={() => this.setModalVisibility(false)}
 					onChangeId={this.newStudentOnChangeId}
-					onChangeName={this.newStudentOnChangeName}
+					onChangeName={this.studentOnChangeName}
+				/>
+				<EditStudentModal
+					visible={this.state.editStudentModalVisibility}
+					loading={createStudentLoading}
+					onOk={this.editStudent}
+					onCancel={() => this.setStudentEditModalVisibility(false)}
+					onChangeId={this.newStudentOnChangeId}
+					onChangeName={this.studentOnChangeName}
 				/>
 				{!students || students.length === 0 ? (
 					<p>You have no students in your classes yet.</p>
