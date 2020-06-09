@@ -75,19 +75,41 @@ class StudentShow extends Component {
 			analytics: null,
 		};
 		this.deleteStudent = this.deleteStudent.bind(this);
+		this.getProgramName = this.getProgramName.bind(this);
 	}
 
 	deleteStudent(id) {
 		this.props.deleteStudent(id);
 	}
 
+	getProgramName(id){
+		const { programs } = this.props;
+		if (programs === undefined || !programs) {
+			return id;
+		} else {
+			const p = programs.find(p => p._id === id);
+			if(p === undefined || !p) {
+				return 'UNKNOWN PROJECT';
+			} else {
+				return p.name;
+			}
+		}
+	}
+
 	componentWillMount() {
-		const { students, match, token } = this.props;
+		const { programs, students, match, token } = this.props;
 		const { analytics } = this.state;
+		
+		if (!programs) {
+			this.setState({ loading: true });
+			this.props.loadPrograms();
+		}
+
 		if (!students || students.length === 0) {
 			this.setState({ loading: true });
 			this.props.loadStudents();
 		}
+
 		if (analytics === null) {
 			this.setState({ loading: true });
 			fetch(`/api/analytics/mostRecent`, {
@@ -134,23 +156,35 @@ class StudentShow extends Component {
 	}
 
 	render() {
-		const { students, match } = this.props;
-		const { loading, analytics } = this.state;
+		const {loading, programs, students, match } = this.props;
+		const { analytics } = this.state;
 		const studentObjectIdParam = match.params.id;
 
 		const student = students.find(s => s._id === studentObjectIdParam);
-
+		
 		if (!student && !loading) {
 			message.success('Student has been successfully deleted');
 			this.props.history.push('/students');
 			return <div />;
 		}
-
+		
 		const studentName = student
 			? student.student_name
 				? student.student_name
 				: student.student_id
 			: 'Student Detail';
+
+
+
+		const progressBars = student.progress.map(p => {
+			return (<div key={p.program_id}>
+				<h4 style={{ marginTop: '0.5rem', marginBottom: 0 }}>
+					{( this.getProgramName(p.program_id) )}
+				</h4>				
+				<Progress type="line" percent={parseInt(p.program_percentage)}/>
+			</div>)
+		})
+
 
 		return (
 			<div>
@@ -168,6 +202,9 @@ class StudentShow extends Component {
 						/>
 					}
 					loading={loading}>
+
+					{progressBars}
+
 					{!analytics || (analytics.length === 0 && <NoAnalytics />)}
 					{analytics &&
 						analytics.length > 0 && (
@@ -181,13 +218,16 @@ class StudentShow extends Component {
 
 const mapStateToProps = state => {
 	return {
+		programs: state.programs.data,
+		loading: state.programs.loading,
+		error: state.programs.error,
 		token: state.teacher.token,
 		students: state.students ? state.students.data : [],
 	};
 };
 
 const mapDispatchToProps = dispatch => {
-	return bindActionCreators({ ...actions.students }, dispatch);
+	return bindActionCreators({ ...actions.students, ...actions.programs }, dispatch);
 };
 
 export default withRouter(
