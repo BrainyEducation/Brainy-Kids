@@ -152,7 +152,7 @@ class Register extends Component {
 						<Alert
 							showIcon
 							type="info"
-							message={`When you first access the Data Analytics Platform (DAP) the system will automatically create for you a random 3-letter ID/password.  You should then change that to a 3-letter (and/or number) ID of your choice.  If you select an ID which someone is already using, you will be prompted to choose a different ID.`}
+							message={`When you first access the Data Analytics Platform (DAP) the system will automatically create for you a random 3digit (a-z,0-9) ID.  You should then change that to a 3-digit ID of your choice.  If you select an ID which someone is already using, you will be prompted to choose a different ID.`}
 						/>
 						<div style={{ textAlign: 'right' }}>
 							<Input
