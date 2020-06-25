@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Teacher = require('../models/teacher');
 const Student = require('../models/student');
 const Analytic = require('../models/analytic');
-const Focus_Item = require('../models/teacher');
+const Focusitem = require('mongoose').model('Focus_Item');
 const Program = require('../models/program');
 
 module.exports.hearatale = (req, res) => {
@@ -38,37 +38,53 @@ module.exports.hearatale = (req, res) => {
 		});
 };
 
-module.exports.application = (req, res) => {
-	const analytic = new Analytic({
-		student: req.body.student,
-		program: req.body.program,
-		focus_item: req.body.focus_item,
-		correct_on: req.body.correct_on,
-		time_spent: req.body.time_spent,
-	});
+module.exports.application = async (req, res) => {
+	console.log(req.body);
 
-	if (req.body.created_at) {
-		analytic.createdAt = req.body.created_at;
-	}
-	if (req.body.updated_at) {
-		analytic.updatedAt = req.body.updated_at;
-	}
+	try {
+		let analyticData = {
+			student: req.body.student,
+			program: req.body.program,
+			focus_item: req.body.focus_item,
+			correct_on: req.body.correct_on,
+			time_spent: req.body.time_spent,
+		}
 
-	analytic
-		.save()
-		.then(analytic => {
-			return res.status(200).json({
-				status: 'ok',
-				analytic: analytic,
+		if (!req.body.focus_item){
+			const focusItem = await Focusitem.findOne({ name: req.body.focus_item_name, program: req.body.program })
+			if (focusItem) { 
+				analyticData.focus_item = focusItem._id 
+			} else {
+				const focus = await createNewFocusItem(req.body.focus_item_name, req.body.program, req.body.focus_item_unit, req.body.focus_item_subunit );
+				analyticData.focus_item = focus._id;
+			}
+		}
+		const analytic = new Analytic(analyticData);
+
+		if (req.body.created_at) {
+			analytic.createdAt = req.body.created_at;
+		}
+		if (req.body.updated_at) {
+			analytic.updatedAt = req.body.updated_at;
+		}
+
+		analytic
+			.save()
+			.then(analytic => {
+				return res.status(200).json({
+					status: 'ok',
+					analytic: analytic,
+				});
 			});
-		})
-		.catch(err => {
-			return res.status(500).json({
-				status: 'error',
-				error: err,
-				message: 'An unexpected internal server error has occurred!',
-			});
+
+	} catch (error) {
+
+		return res.status(500).json({
+			status: 'error',
+			error: error,
+			message: 'An unexpected internal server error has occurred!',
 		});
+	}
 };
 
 module.exports.focusItem = async (req, res) => {
@@ -322,6 +338,19 @@ module.exports.analyticsForStudent = (req, res) => {
 				});
 			});
 	});
+};
+
+async function createNewFocusItem(name, program, unit, subunit){
+
+	const newFocus = await new Focusitem({
+		name: name,
+		program: program,
+		unit: unit,
+		sub_unit: subunit
+	})
+	.save()
+
+	return newFocus;
 };
 
 function sortAnalyticsIntoFocusItemStructure(analytics) {

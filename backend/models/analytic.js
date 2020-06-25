@@ -12,8 +12,28 @@ const schema = mongoose.Schema(
 		focus_item: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Focus_Item',
-			required: true,
-		},
+			required: false,
+        },
+        
+        // alternative to focus_item id
+        //Name of the focus item
+        focus_item_name: {
+            type: String,
+            required: false,
+        },
+
+        // Unit this focus item is in
+        focus_item_unit: {
+            type: String,
+            required: false,
+        },
+        // Subunit this focus item is in
+        focus_item_subunit: {
+            type: String,
+            required: false,
+        },
+
+
 		// Reference to the program
 		program: {
             type: mongoose.Schema.Types.ObjectId, 
